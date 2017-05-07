@@ -11,6 +11,7 @@ double readAnalogIn(int chan) {
       digitalWrite(AMUXSEL0, 0);
       digitalWrite(AMUXSEL1, 0);
       digitalWrite(AMUXSEL2, 0);
+      Serial.println("Seleccion #0 ( Voltage )");
       delay(100);
      break;
     case 1:
@@ -18,6 +19,7 @@ double readAnalogIn(int chan) {
       digitalWrite(AMUXSEL0, 1);
       digitalWrite(AMUXSEL1, 0);
       digitalWrite(AMUXSEL2, 0);
+      Serial.println("Seleccion #1 ( Amperage )");
       delay(100);
       break;
     case 2:
@@ -25,6 +27,7 @@ double readAnalogIn(int chan) {
       digitalWrite(AMUXSEL0, 0);
       digitalWrite(AMUXSEL1, 1);
       digitalWrite(AMUXSEL2, 0);
+      Serial.println("Seleccion #2");
       delay(100);
       break;
     case 3:
@@ -82,5 +85,5 @@ double _Current(int _chan){
 
 }
 double _Power(double V, double I){
-	return abs(double((V*I)));
+	return abs(round(double((V*I))));
 }

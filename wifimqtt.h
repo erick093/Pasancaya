@@ -10,10 +10,10 @@
 
 #define SSID "chuchusmote"
 #define PASS "44599544459954"
-#define TOPIC_V "panels/voltage"
-#define TOPIC_A "panels/amp"
-#define TOPIC_P "panels/power"
-#define TOPIC_E "panels/energy"
+#define TOPIC_V "panels1/voltage"
+#define TOPIC_A "panels1/amp"
+#define TOPIC_P "panels1/power"
+#define TOPIC_E "panels1/energy"
 #define MQTT_SERVER "10.0.0.50" //IP Addres of MQTT SERVER(Raspberry Pi)
 
 //#define THINGSPEAK_URL "api.thingspeak.com"
@@ -81,10 +81,14 @@ void connectMQTT(){
       //if connected, subscribe to the topic(s) we want to be notified about
       if (client.connect((char*) clientName.c_str())) {
         Serial.println("\tMQTT Connected to broker");
-        //client.subscribe(lightTopic);
-        Serial.print("Topic is:");
-        Serial.println(TOPIC_V);
-          // if (client.publish(TOPIC, "hello from NodeMCU")) {
+        client.subscribe(TOPIC_E);
+        client.subscribe(TOPIC_V);
+        client.subscribe(TOPIC_A);
+        client.subscribe(TOPIC_P);
+        
+        //Serial.print("Topic is:");
+        //Serial.println(TOPIC_V);
+          // if (client.publish(TOPIC, "hello from NodeMCU")) {         
           //   Serial.println("Publish ok");
           // }
           // else {
@@ -94,9 +98,12 @@ void connectMQTT(){
 
       //otherwise print failed for debugging
       else{
-        Serial.println("\t MQTT connection failed.");
-        Serial.println("Will reset and try again ... ");
-        abort();
+        Serial.print("failed, rc=");
+        Serial.print(client.state());
+        Serial.println(" try again in 5 seconds");
+        // Serial.println("\t MQTT connection failed.");
+        // Serial.println("Will reset and try again ... ");
+        // abort();
       }
     }
   }
