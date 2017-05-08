@@ -22,9 +22,9 @@ const int sleepTimeS = 10;
 
 char result[8];
 
-float voltage;
+//float voltage;
 uint8 count[2];
-uint8 energy[2];
+float energy;
 
 
 
@@ -96,34 +96,40 @@ void loop() {
   }
   //Obtaining Energy
   system_rtc_mem_read(65, count, 2);
+  Serial.println("Verificando Contenidos ... ");
+  Serial.println(count[0]);
+  Serial.println(count[1]);  
   if (count[0] != 123) {
      Serial.println("first time");
      count[0] = 123;
      count[1] = 0;
-     energy[1]= 0;
+     energy= 0;
   } else {
      count[1] += 1;
      Serial.print("count = ");
      Serial.println(count[1]);
   }
   system_rtc_mem_write(65, count, 2);
-  system_rtc_mem_read(68, energy, 2);
+  system_rtc_mem_read(68, result_E, sizeof(result_E));
   Serial.print("energy before = ");
-  Serial.println(energy[1]);
-  energy[1] = energy[1] + (int(read_P)/maxcounts);
-  system_rtc_mem_write(68, energy, 2);
+  Serial.println(result_E);
+  energy = atof(result_E);
+  Serial.print("energy after atof (float) = ");
+  Serial.println(energy,5);
+  energy = energy + read_P/maxcounts;
+  dtostrf(energy, 6, 5, result_E); //converting FLOAT to CHAR
+  system_rtc_mem_write(68, result_E, sizeof(result_E));
   Serial.print("energy after = ");
-  Serial.println(energy[1]);
+  Serial.println(result_E);
   if (!client.connected()){
     Serial.println("Reconnecting MQTT");
     connectMQTT();
   }
   if (count[1] == maxcounts){
-    Serial.print("Sending Energy: ");
-    Serial.println(energy[1],5);
-    dtostrf(energy[1], 6, 5, result_E); //converting FLOAT to CHAR
-    Serial.println(result_E);
     Serial.println("Maxcounts reached");
+    Serial.print("Sending Energy: ");
+    Serial.println(result_E);
+    //Serial.println(result_E);
     client.loop();
     if (client.publish(TOPIC_E, result_E)) {
       Serial.println("Publish E ok");
@@ -132,9 +138,12 @@ void loop() {
       Serial.println("Publish E failed");
     }
     count[1] = 0 ;
-    energy[1] = 0;
+    count[0] = 0 ;
+    energy = 0;
+    dtostrf(energy, 6, 5, result_E);
     system_rtc_mem_write(65, count, 2);
-    system_rtc_mem_write(68, energy, 2);
+    system_rtc_mem_write(68, result_E, sizeof(result_E));
+    //system_rtc_mem_write(68, energy, sizeof(energy));
     
   }
 
